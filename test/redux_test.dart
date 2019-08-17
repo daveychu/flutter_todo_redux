@@ -1,5 +1,6 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_todo_redux/app_state.dart';
 import 'package:flutter_todo_redux/redux.dart';
 import 'package:flutter_todo_redux/todo.dart';
 
@@ -23,7 +24,7 @@ void main() {
   });
 
   test('completing todo', () {
-    var appState = AppState(BuiltList.from([todo]));
+    var appState = AppState((b) => b..todos = ListBuilder([todo]));
 
     AppState result = appReducer(appState, CompleteTodo(todo));
 
@@ -34,7 +35,7 @@ void main() {
     todo = Todo((b) => b
       ..name = '_'
       ..isCompleted = true);
-    var appState = AppState(BuiltList.from([todo]));
+    var appState = AppState((b) => b..todos = ListBuilder([todo]));
 
     AppState result = appReducer(appState, ReopenTodo(todo));
 
@@ -42,7 +43,7 @@ void main() {
   });
 
   test('deleting todo', () {
-    var appState = AppState(BuiltList.from([todo]));
+    var appState = AppState((b) => b..todos = ListBuilder([todo]));
 
     AppState result = appReducer(appState, DeleteTodo(todo));
 
@@ -50,7 +51,7 @@ void main() {
   });
 
   test('editing todo', () {
-    var appState = AppState(BuiltList.from([todo]));
+    var appState = AppState((b) => b..todos = ListBuilder([todo]));
 
     var newTodo = Todo((b) => b..name = 'Do sit up');
     AppState result = appReducer(appState, EditTodo(todo, newTodo));

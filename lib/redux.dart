@@ -1,5 +1,5 @@
 import 'package:built_collection/built_collection.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter_todo_redux/app_state.dart';
 import 'package:flutter_todo_redux/todo.dart';
 import 'package:flutter_todo_redux/todo_repository.dart';
 import 'package:redux/redux.dart';
@@ -42,40 +42,32 @@ class LoadTodos {
 }
 
 AppState appReducer(AppState appState, action) {
-  if (action is AddTodo) {
-    return AppState(BuiltList.of(appState.todos.toList()..add(action.todo)));
-  } else if (action is CompleteTodo) {
-    return AppState(
-        BuiltList.of(appState.todos.map((todo) => todo == action.todo
-            ? todo.rebuild((b) => b..isCompleted = true)
-            : todo)));
-  } else if (action is ReopenTodo) {
-    return AppState(
-        BuiltList.of(appState.todos.map((todo) => todo == action.todo
-            ? todo.rebuild((b) => b..isCompleted = false)
-            : todo)));
-  } else if (action is DeleteTodo) {
-    return AppState(BuiltList.of(
-        appState.todos.toList()..removeWhere((todo) => todo == action.todo)));
-  } else if (action is EditTodo) {
-    return AppState(BuiltList.of(appState.todos
-        .toList()
-        .map((todo) => todo == action.todo ? action.newTodo : todo)));
-  } else if (action is LoadTodos) {
-    return AppState(BuiltList.of(action.todos));
-  }
-  return appState;
+  return appState
+      .rebuild((b) => b..todos = todosReducer(appState.todos, action));
 }
 
-@immutable
-class AppState {
-  final BuiltList<Todo> todos;
-
-  factory AppState.initial() {
-    return AppState(BuiltList.of([]));
+ListBuilder<Todo> todosReducer(BuiltList<Todo> todos, action) {
+  if (action is AddTodo) {
+    return ListBuilder(todos.toList()..add(action.todo));
+  } else if (action is CompleteTodo) {
+    return ListBuilder(todos.map((todo) => todo == action.todo
+        ? todo.rebuild((b) => b..isCompleted = true)
+        : todo));
+  } else if (action is ReopenTodo) {
+    return ListBuilder(todos.map((todo) => todo == action.todo
+        ? todo.rebuild((b) => b..isCompleted = false)
+        : todo));
+  } else if (action is DeleteTodo) {
+    return ListBuilder(
+        todos.toList()..removeWhere((todo) => todo == action.todo));
+  } else if (action is EditTodo) {
+    return ListBuilder(todos
+        .toList()
+        .map((todo) => todo == action.todo ? action.newTodo : todo));
+  } else if (action is LoadTodos) {
+    return ListBuilder(action.todos.toList());
   }
-
-  AppState(this.todos);
+  return todos.toBuilder();
 }
 
 class TodosPersistenceMiddleware extends MiddlewareClass<AppState> {
