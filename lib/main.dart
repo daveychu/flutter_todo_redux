@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_todo_redux/local_json_storage.dart';
+import 'package:flutter_todo_redux/todo.dart';
 import 'package:flutter_todo_redux/redux.dart';
+import 'package:flutter_todo_redux/todo_repository.dart';
 import 'package:redux/redux.dart';
 
 void main() => runApp(MyApp());
@@ -10,7 +13,8 @@ class MyApp extends StatelessWidget {
   final Store<AppState> store = Store<AppState>(
     appReducer,
     initialState: AppState.initial(),
-  );
+    middleware: [TodosPersistenceMiddleware(TodoRepository(LocalJsonStorage()))],
+  )..dispatch(LoadTodos());
 
   @override
   Widget build(BuildContext context) {
@@ -126,7 +130,7 @@ class _EditTodoScreenState extends State<EditTodoScreen> {
             RaisedButton(
               onPressed: () {
                 if (nameController.text.isNotEmpty) {
-                  var newTodo = Todo(nameController.text);
+                  var newTodo = Todo((b) => b..name = nameController.text);
                   var store = StoreProvider.of<AppState>(context);
                   if (widget.todo != null) {
                     store.dispatch(EditTodo(widget.todo, newTodo));

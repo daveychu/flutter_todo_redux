@@ -1,6 +1,7 @@
 import 'package:built_collection/built_collection.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_todo_redux/redux.dart';
+import 'package:flutter_todo_redux/todo.dart';
 
 void main() {
   Todo todo;
@@ -8,7 +9,7 @@ void main() {
 
   setUp(() {
     appState = AppState.initial();
-    todo = Todo('Do push up');
+    todo = Todo((b) => b..name = 'Do push up');
   });
 
   test('initial state', () {
@@ -30,7 +31,9 @@ void main() {
   });
 
   test('reopening todo', () {
-    todo = Todo('_', true);
+    todo = Todo((b) => b
+      ..name = '_'
+      ..isCompleted = true);
     var appState = AppState(BuiltList.from([todo]));
 
     AppState result = appReducer(appState, ReopenTodo(todo));
@@ -49,9 +52,15 @@ void main() {
   test('editing todo', () {
     var appState = AppState(BuiltList.from([todo]));
 
-    var newTodo = Todo('Do sit up');
+    var newTodo = Todo((b) => b..name = 'Do sit up');
     AppState result = appReducer(appState, EditTodo(todo, newTodo));
 
     expect(result.todos[0], equals(newTodo));
+  });
+
+  test('loading todos', () {
+    AppState result = appReducer(appState, LoadTodos([todo]));
+
+    expect(result.todos, [todo]);
   });
 }
