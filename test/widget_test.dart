@@ -13,7 +13,6 @@ void main() {
     await tester.pumpAndSettle();
 
     var editableText = find.byType(TextField);
-    await tester.tap(editableText);
     await tester.enterText(editableText, text);
     await tester.tap(find.byType(RaisedButton));
     await tester.pumpAndSettle();

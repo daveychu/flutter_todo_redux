@@ -122,6 +122,7 @@ class _EditTodoScreenState extends State<EditTodoScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             TextField(
+              autofocus: true,
               decoration: InputDecoration(
                 labelText: 'Name',
               ),
