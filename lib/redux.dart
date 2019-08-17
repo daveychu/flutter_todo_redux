@@ -47,16 +47,12 @@ AppState appReducer(AppState appState, action) {
   } else if (action is CompleteTodo) {
     return AppState(
         BuiltList.of(appState.todos.map((todo) => todo == action.todo
-            ? Todo((b) => b
-              ..name = todo.name
-              ..isCompleted = true)
+            ? todo.rebuild((b) => b..isCompleted = true)
             : todo)));
   } else if (action is ReopenTodo) {
     return AppState(
         BuiltList.of(appState.todos.map((todo) => todo == action.todo
-            ? Todo((b) => b
-              ..name = todo.name
-              ..isCompleted = false)
+            ? todo.rebuild((b) => b..isCompleted = false)
             : todo)));
   } else if (action is DeleteTodo) {
     return AppState(BuiltList.of(
