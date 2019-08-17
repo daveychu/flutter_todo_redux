@@ -1,4 +1,3 @@
-import 'package:built_collection/built_collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -10,10 +9,7 @@ void main() => runApp(MyApp());
 class MyApp extends StatelessWidget {
   final Store<AppState> store = Store<AppState>(
     appReducer,
-    initialState: AppState(BuiltList.of([
-      Todo('Do push up'),
-      Todo('Do sit up'),
-    ])),
+    initialState: AppState.initial(),
   );
 
   @override
@@ -63,18 +59,87 @@ class _MyHomePageState extends State<MyHomePage> {
                         ? TextDecoration.lineThrough
                         : TextDecoration.none),
               ),
-              trailing: IconButton(
-                icon: Icon(Icons.delete),
-                onPressed: () => store.dispatch(DeleteTodo(todo)),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  IconButton(
+                    icon: Icon(Icons.edit),
+                    onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (context) => EditTodoScreen(todo))),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.delete),
+                    onPressed: () => store.dispatch(DeleteTodo(todo)),
+                  ),
+                ],
               ),
             );
           },
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () => Navigator.of(context)
+            .push(MaterialPageRoute(builder: (context) => EditTodoScreen())),
         tooltip: 'Add todo',
         child: Icon(Icons.add),
+      ),
+    );
+  }
+}
+
+class EditTodoScreen extends StatefulWidget {
+  final Todo todo;
+
+  EditTodoScreen([this.todo]);
+
+  @override
+  _EditTodoScreenState createState() => _EditTodoScreenState();
+}
+
+class _EditTodoScreenState extends State<EditTodoScreen> {
+  TextEditingController nameController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    nameController.text = widget.todo?.name;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Add todo'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            TextField(
+              decoration: InputDecoration(
+                labelText: 'Name',
+              ),
+              controller: nameController,
+            ),
+            RaisedButton(
+              onPressed: () {
+                if (nameController.text.isNotEmpty) {
+                  var newTodo = Todo(nameController.text);
+                  var store = StoreProvider.of<AppState>(context);
+                  if (widget.todo != null) {
+                    store.dispatch(EditTodo(widget.todo, newTodo));
+                  } else {
+                    store.dispatch(AddTodo(newTodo));
+                  }
+                }
+                Navigator.of(context).pop();
+              },
+              child: Text('Save'),
+            )
+          ],
+        ),
       ),
     );
   }
