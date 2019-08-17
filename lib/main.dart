@@ -63,6 +63,10 @@ class _MyHomePageState extends State<MyHomePage> {
                         ? TextDecoration.lineThrough
                         : TextDecoration.none),
               ),
+              trailing: IconButton(
+                icon: Icon(Icons.delete),
+                onPressed: () => store.dispatch(DeleteTodo(todo)),
+              ),
             );
           },
         ),
